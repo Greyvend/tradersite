@@ -33,9 +33,9 @@ def _get_prices(stock, start_date, end_date):
             # Add the last item in the list, which will be the adjusted close
             # price, after converting it to a float
             closing_prices.append(float(items[6]))
-
     # Return the results
     return closing_prices
+
 
 def get_stock_names(name, amount, start=1):
     result = []
@@ -50,46 +50,128 @@ def get_stock_names(name, amount, start=1):
     return result
 
 
-def history_run(stocks, index, chunk_size, start_date, end_date=date.today()):
-    # def chunks(l, size):
-    #     reminder = len(l) % size
-    #     result = []
-    #     if reminder:
-    #         result.append(l[:reminder])
-    #     for i in xrange(reminder, len(l), size):
-    #         result.append(l[i:i+size])
-    #     return result
-    def chunks(l, size):
+def history_run(stocks, index, time_period, start_date, end_date=date.today()):
+    """
+
+    :param stocks:
+    :param index:
+    :param time_period:
+    :param start_date:
+    :param end_date:
+    :return:
+    """
+
+    def backward_chunks(l, amount, size, pos):
+        """
+
+        :param l:
+        :param amount:
+        :param size:
+        :param pos:
+        :return:
+        """
         result = []
-        for i in xrange(0, len(l), size):
+        for i in range((pos - size * amount), (pos - size), size):
             result.append(l[i:i+size])
         return result
 
     #gather and split price data in equal chunks to feed signal
     index_prices = _get_prices(index, start_date, end_date)
-    tail = len(index_prices) % chunk_size
-    index_prices = chunks(index_prices[tail:], chunk_size)
 
     #split stock data in the same way
     all_prices = []
+    start_position = (pca.k - 1) * time_period
     for stock in stocks:
-        history = _get_prices(stock, start_date, end_date)
-
-        #define position to be a starting history point. It should be shifted,
+        # define position to be a starting history point. It should be shifted,
         # because k preceding index price time periods are required for the
         # first stock price time period
-        start_position = tail + (pca.k - 1) * chunk_size
-        all_prices.append(chunks(history[start_position:], chunk_size))
+        history = _get_prices(stock, start_date, end_date)[start_position:]
+        all_prices.append(history)
 
-    # amount of time periods
-    period_amount = len(all_prices[0])
-    result = []
-    for i in range(period_amount):
+    # make successive calls to signal function with continuous time history
+    signals = []
+    stop_pos = len(all_prices[0]) + 1
+    for t in range(time_period, stop_pos):
+        # select prices of certain time period
         prices = []
         for stock_price_list in all_prices:
-            prices.append(stock_price_list[i])
-        result.append(pca.signal(prices, index_prices[i:i + pca.k]))
-    return result
+            prices.append(stock_price_list[t - time_period:t])
+
+        # divide index list to chunks of length k, according to algorithm
+        # requirements
+        split_index = backward_chunks(index_prices, pca.k, time_period, t)
+
+        # call algorithm function
+        signals.append(pca.signal(prices, split_index))
+
+    # get cumulative returns for all of the timestamps
+    return signals
 
 
-# def get_cumulative_returns():
+def get_returns_and_pl(all_prices, signals):
+    def get_log_returns(portfolio, open_prices, cur_prices):
+        """
+        Count logarithmic returns for both long and short open positions,
+        as average of all of the returns of the stocks in portfolio.
+
+        :param portfolio: list of 'sell', 'buy', None elems, showing state of
+                          given stock in portfolio
+        :param open_prices: list of prices on which positions were opened
+        :param cur_prices: list of current prices to compare with
+        :return: average return percentage
+        :rtype : float
+        """
+        pass
+
+    def refresh_prices(prices, signal_number):
+        """
+        Close positions and open new ones depending on signals[signal_number]
+        data.
+
+        :type prices: list
+        :param prices: list of current open prices for all stocks, negative
+        prices mean short positions
+        :param signal_number: index of signal to renew positions from
+        :return : P&L of closed trades
+        """
+        profit_loss = 0
+        cur_signal = signals[signal_number]
+        for i in range(all_prices):
+            if cur_signal[i] == 'buy':
+                if not prices[i]:
+                    prices[i] = all_prices[i][signal_number]
+                elif prices[i] < 0:  # it means short position, we should
+                # close it
+                    profit_loss = -prices[i] - cur_signal[i]
+                    prices[i] = None
+            elif cur_signal[i] == 'sell':
+                if not prices[i]:
+                    prices[i] = -all_prices[i][signal_number]
+                elif prices[i] > 0:  # it means long position, we should
+                # close it
+                    profit_loss = -prices[i] - cur_signal[i]
+                    prices[i] = None
+        return profit_loss
+
+    open_prices = [None] * len(all_prices)
+
+    # fill open_prices with initial stock prices data
+    refresh_prices(open_prices, 0)
+
+    # go through all signals and count log returns and collect P&Ls
+    returns = [0]
+    profit_loss = []
+    for i, signal in signals[1:]:
+        # accumulate recent log returns
+        cur_prices = [stock_price_list[i] for stock_price_list in all_prices]
+        returns.append(returns[i - 1] + get_log_returns(open_prices,
+                                                        cur_prices))
+
+        # refresh open_prices after signal work
+        new_pl = refresh_prices(open_prices, i)
+
+        # append pl from last closed trades
+        profit_loss.append(new_pl)
+    return returns, profit_loss
+
+
