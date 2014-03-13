@@ -51,7 +51,7 @@ class BasicLogicTests(TestCase):
         pca.k = 2
         pca.H = 4
         pca.regime_switcher = False
-        amount = 20
+        amount = 5
         stocks = stockdata.get_stock_names(self.nasdaq_path, amount)
         index = '^GSPC'
         chunk_size = 9
@@ -60,6 +60,7 @@ class BasicLogicTests(TestCase):
         results = stockdata.history_run(stocks, index, chunk_size, start_date,
                                         end_date)
         print results
+        print len(results)
         #TODO: assert equal results, [['buy', 'buy', 'buy'], ['buy', 'buy', 'sell'], ['sell', 'sell', 'buy']]
 
     # def test_history_run_lots_of_parameters(self):

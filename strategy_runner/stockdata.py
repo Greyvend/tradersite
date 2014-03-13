@@ -62,16 +62,8 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
     """
 
     def backward_chunks(l, amount, size, pos):
-        """
-
-        :param l:
-        :param amount:
-        :param size:
-        :param pos:
-        :return:
-        """
         result = []
-        for i in range((pos - size * amount), (pos - size), size):
+        for i in range((pos - size * amount), pos, size):
             result.append(l[i:i+size])
         return result
 
@@ -99,7 +91,8 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
 
         # divide index list to chunks of length k, according to algorithm
         # requirements
-        split_index = backward_chunks(index_prices, pca.k, time_period, t)
+        split_index = backward_chunks(index_prices, pca.k, time_period,
+                                      t + start_position)
 
         # call algorithm function
         signals.append(pca.signal(prices, split_index))
