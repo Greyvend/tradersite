@@ -1,7 +1,7 @@
 __author__ = 'mosin'
-
 import urllib2
 import csv
+import numpy as np
 from datetime import date
 import pca
 
@@ -102,19 +102,26 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
 
 
 def get_returns_and_pl(all_prices, signals):
-    def get_log_returns(portfolio, open_prices, cur_prices):
+    def get_log_returns(open_prices, cur_prices):
         """
         Count logarithmic returns for both long and short open positions,
         as average of all of the returns of the stocks in portfolio.
 
-        :param portfolio: list of 'sell', 'buy', None elems, showing state of
-                          given stock in portfolio
         :param open_prices: list of prices on which positions were opened
         :param cur_prices: list of current prices to compare with
         :return: average return percentage
         :rtype : float
         """
-        pass
+        gross_returns = []
+        for i, price in enumerate(open_prices):
+            if price > 0:
+                # long position gross return
+                gross_returns.append(price/cur_prices[i])
+            elif price < 0:
+                price *= -1
+                # short position gross return
+                gross_returns.append((2 * price - cur_prices[i])/cur_prices[i])
+        return np.log(np.mean(gross_returns))
 
     def refresh_prices(prices, signal_number):
         """
