@@ -77,7 +77,7 @@ def signal(prices, index):
 
     # Preparing main matrices for further computations
     log_returns_m = np.log(ml.divide(prices_m[1:], prices_m[:-1]))
-    time_interval_amount, stock_amount = log_returns_m.shape
+    time_period, stock_amount = log_returns_m.shape
     mean_log_returns_m = ml.average(log_returns_m, axis=0)
     demeaned_log_returns_m = log_returns_m - mean_log_returns_m
     covariation_m = demeaned_log_returns_m.T * demeaned_log_returns_m
@@ -98,7 +98,7 @@ def signal(prices, index):
     # Count beta parameters with respect to given benchmark index
     betas_m = betas(prices_m)
 
-    time = time_interval_amount - time_shift
+    time = time_period - time_shift
     if time < H:
         raise WrongParameterException("time_shift should be less than H")
 

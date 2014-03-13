@@ -49,15 +49,15 @@ class BasicLogicTests(TestCase):
     def test_history_run_data_fetching(self):
         #parameters:
         pca.k = 2
-        pca.H = 4
+        pca.H = 8
         pca.regime_switcher = False
         amount = 5
         stocks = stockdata.get_stock_names(self.nasdaq_path, amount)
         index = '^GSPC'
-        chunk_size = 9
+        time_period = 9
         start_date = date(2014, 1, 11)
         end_date = date(2014, 3, 11)
-        results = stockdata.history_run(stocks, index, chunk_size, start_date,
+        results = stockdata.history_run(stocks, index, time_period, start_date,
                                         end_date)
         print results
         print len(results)
