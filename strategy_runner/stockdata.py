@@ -8,6 +8,14 @@ import pca
 
 def _get_prices(stock, start_date, end_date):
     # Use URL template and fill in stock symbol, start date and end date
+    """
+    Get dates and prices on that dates.
+
+    :param stock: name of stock to get data about
+    :param start_date: starting date
+    :param end_date: last date
+    :return: list of tuples (date, price)
+    """
     url = "http://ichart.finance.yahoo.com/table.csv?s={0}&a={1}&b={2}&c={3}" \
           "&d={4}&e={5}&f={6}&g=d&ignore=.csv" \
         .format(urllib2.quote(stock), start_date.month - 1, start_date.day,
@@ -37,9 +45,17 @@ def _get_prices(stock, start_date, end_date):
     return closing_prices
 
 
-def get_stock_names(name, amount, start=1):
+def get_stock_names(source, amount, start=1):
+    """
+    Fetch stock names from csv file.
+
+    :param source: csv file to be searched for names
+    :param amount: amount of stock names to get
+    :param start: first index to start fetching from
+    :return: list of strings, representing stock names
+    """
     result = []
-    with open(name, buffering=1) as f:
+    with open(source, buffering=1) as f:
         row_no = 0
         for row in csv.reader(f, delimiter=','):
             if row_no - start == amount:
@@ -52,13 +68,20 @@ def get_stock_names(name, amount, start=1):
 
 def history_run(stocks, index, time_period, start_date, end_date=date.today()):
     """
-
-    :param stocks:
-    :param index:
-    :param time_period:
-    :param start_date:
-    :param end_date:
-    :return:
+    Run PCA signal on desired history period with particular stocks and
+    benchmark index
+    :param stocks: list of stock names to run strategy on
+    :param index: name of benchmark index to compare risks with
+    :param time_period: size of time period, for which prices will be given
+    to signal function
+    :param start_date: beginning date to run from.
+    Important note: Some time from the beginning of this period is required for
+    the statistic gathering, so signal will be run with some lag from
+    start_date
+    :param end_date: final date to run signal on
+    :return: trinity of: dates - list of dates on which signal was run,
+    prices - list of lists of corresponding prices for all the stocks,
+    signals - list of signal results. Every of those is a list too.
     """
 
     def backward_chunks(l, amount, size, pos):
@@ -97,8 +120,8 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
         # call algorithm function
         signals.append(pca.signal(prices, split_index))
 
-    # get cumulative returns for all of the timestamps
     return signals
+    #TODO: return dates, all_prices(starting from ), signals
 
 
 def get_returns_and_pl(all_prices, signals):

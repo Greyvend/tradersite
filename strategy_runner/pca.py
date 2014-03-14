@@ -85,6 +85,7 @@ def signal(prices, index):
     # Count eigenvectors of covariation matrix and compose PCA matrix from them
     e_values, e_vectors = eig(covariation_m)
     abs_e_values = np.absolute(e_values)
+    # TODO: np.absolute(e_vectors) or something like that
     indexed_abs_e_values = [(i, v) for i, v in enumerate(abs_e_values)]
     w = sorted(indexed_abs_e_values, reverse=False,
                key=lambda x: x[1])
