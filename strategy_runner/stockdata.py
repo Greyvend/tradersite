@@ -2,7 +2,7 @@ __author__ = 'mosin'
 import urllib2
 import csv
 import numpy as np
-from datetime import date
+from datetime import date, datetime
 import pca
 
 
@@ -24,25 +24,21 @@ def _get_prices(stock, start_date, end_date):
     # Download the data using the URL crafted above
     data = urllib2.urlopen(url).read()
 
-    # Split it based on new line characters
-    lines = data.split('\n')
-
+    # Dates will hold dates on which prices are presented
+    dates = []
     # Closing prices will hold the adjusted close for each day
     closing_prices = []
-
-    # Loop through each line (meaning each day)
-    for line in lines[1:]:
-
-        # Split CSV data
-        items = line.split(',')
-
+    for row in csv.reader(data, delimiter=','):
         # Verify that the results have 7 items
-        if len(items) == 7:
+        if len(row) == 7:
+            # Add the first item in the list, which is the date after
+            # converting it using the following pattern
+            dates.append(datetime.strptime(row[0], '%Y-%m-%d').date())
             # Add the last item in the list, which will be the adjusted close
             # price, after converting it to a float
-            closing_prices.append(float(items[6]))
-    # Return the results
-    return closing_prices
+            closing_prices.append(float(row[6]))
+
+    return dates, closing_prices
 
 
 def get_stock_names(source, amount, start=1):
@@ -91,16 +87,17 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
         return result
 
     #gather and split price data in equal chunks to feed signal
-    index_prices = _get_prices(index, start_date, end_date)
+    dates, index_prices = _get_prices(index, start_date, end_date)
 
     #split stock data in the same way
     all_prices = []
+
+    # define position to be a starting history point. It should be shifted,
+    # because k preceding index price time periods are required for the
+    # first stock price time period
     start_position = (pca.k - 1) * time_period
     for stock in stocks:
-        # define position to be a starting history point. It should be shifted,
-        # because k preceding index price time periods are required for the
-        # first stock price time period
-        history = _get_prices(stock, start_date, end_date)[start_position:]
+        history = _get_prices(stock, start_date, end_date)[1][start_position:]
         all_prices.append(history)
 
     # make successive calls to signal function with continuous time history
@@ -120,8 +117,9 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
         # call algorithm function
         signals.append(pca.signal(prices, split_index))
 
-    return signals
-    #TODO: return dates, all_prices(starting from ), signals
+    # remove prices, corresponding to timestamps that weren't run on
+    prices = [price_list[time_period:] for price_list in all_prices]
+    return dates, prices, signals
 
 
 def get_returns_and_pl(all_prices, signals):
