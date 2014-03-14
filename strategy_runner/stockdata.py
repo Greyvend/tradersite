@@ -19,25 +19,31 @@ def _get_prices(stock, start_date, end_date):
     url = "http://ichart.finance.yahoo.com/table.csv?s={0}&a={1}&b={2}&c={3}" \
           "&d={4}&e={5}&f={6}&g=d&ignore=.csv" \
         .format(urllib2.quote(stock), start_date.month - 1, start_date.day,
-                start_date.year, end_date.month, end_date.day, end_date.year)
+                start_date.year, end_date.month - 1, end_date.day, end_date
+            .year)
 
     # Download the data using the URL crafted above
     data = urllib2.urlopen(url).read()
 
-    # Dates will hold dates on which prices are presented
-    dates = []
-    # Closing prices will hold the adjusted close for each day
-    closing_prices = []
-    for row in csv.reader(data, delimiter=','):
+    # Split it based on new line characters
+    lines = data.split('\n')
+
+    dates = []  # Dates will hold dates on which prices are presented
+    closing_prices = []  # Closing prices will hold the adjusted close for each
+                         # day
+    # Loop through each line (meaning each timestamp)
+    for line in reversed(lines[1:]):
+        # Split CSV data
+        items = line.split(',')
+
         # Verify that the results have 7 items
-        if len(row) == 7:
+        if len(items) == 7:
             # Add the first item in the list, which is the date after
             # converting it using the following pattern
-            dates.append(datetime.strptime(row[0], '%Y-%m-%d').date())
+            dates.append(datetime.strptime(items[0], '%Y-%m-%d').date())
             # Add the last item in the list, which will be the adjusted close
             # price, after converting it to a float
-            closing_prices.append(float(row[6]))
-
+            closing_prices.append(float(items[6]))
     return dates, closing_prices
 
 
@@ -117,8 +123,10 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
         # call algorithm function
         signals.append(pca.signal(prices, split_index))
 
-    # remove prices, corresponding to timestamps that weren't run on
-    prices = [price_list[time_period:] for price_list in all_prices]
+    # leave only prices that correspond signals
+    prices = [price_list[time_period - 1:] for price_list in all_prices]
+    # leave only dates that correspond signals
+    dates = dates[start_position + time_period - 1:]
     return dates, prices, signals
 
 
