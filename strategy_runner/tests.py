@@ -9,8 +9,8 @@ import stockdata
 
 
 class BasicLogicTests(TestCase):
-    def __init__(self):
-        TestCase.__init__(self)
+    def __init__(self, *args, **kwargs):
+        super(BasicLogicTests, self).__init__(*args, **kwargs)
         self.nasdaq_path = os.path.join(settings.BASE_DIR,
                                         'strategy_runner/stock_names/'
                                         'NASDAQ.csv')
@@ -49,19 +49,64 @@ class BasicLogicTests(TestCase):
     def test_history_run_data_fetching(self):
         #parameters:
         pca.k = 2
-        pca.H = 8
+        pca.H = 4
         pca.regime_switcher = False
         amount = 5
         stocks = stockdata.get_stock_names(self.nasdaq_path, amount)
         index = '^GSPC'
         time_period = 9
-        start_date = date(2014, 1, 11)
+        start_date = date(2014, 2, 11)
         end_date = date(2014, 3, 11)
-        results = stockdata.history_run(stocks, index, time_period, start_date,
+        signals = stockdata.history_run(stocks, index, time_period, start_date,
                                         end_date)
-        print results
-        print len(results)
-        #TODO: assert equal results, [['buy', 'buy', 'buy'], ['buy', 'buy', 'sell'], ['sell', 'sell', 'buy']]
+        right_signals = [['buy', 'sell', 'sell', 'sell', 'sell'],
+                         ['sell', 'buy', 'buy', 'buy', 'buy'],
+                         ['sell', 'sell', 'sell', 'sell', 'sell'],
+                         ['buy', 'sell', 'sell', 'sell', 'sell'],
+                         ['sell', 'sell', 'sell', 'sell', 'sell']]
+        #self.assertEqual(signals, right_signals)
+
+    def test_get_returns_and_pl_average_return(self):
+        """
+        Run on simple 2 period time schema and verify that average return is
+        being processed correctly. No positions are closed.
+        """
+        all_prices = [[1., 2.], [3., 4.], [5., 6.]]
+        signals = [['buy', 'buy', 'sell'],
+                   [None, None, None]]
+        returns, p_and_l = stockdata.get_returns_and_pl(all_prices, signals)
+        self.assertEqual(returns, [0, -0.38077249551779302])
+        self.assertEqual(p_and_l, [0, 0])
+
+    def test_get_returns_and_pl_closing_trades(self):
+        """
+        Run on simple 2 period time schema and verify that trades are closed
+        and P&L is counted correctly.
+        """
+        all_prices = [[1., 2.], [3., 4.], [5., 6.]]
+        signals = [['buy', 'buy', 'sell'],
+                   ['sell', 'sell', 'buy']]
+        returns, p_and_l = stockdata.get_returns_and_pl(all_prices, signals)
+        self.assertEqual(returns, [0, -0.38077249551779302])
+        self.assertEqual(p_and_l, [0, 1.0])
+
+    def test_get_returns_and_pl_3_days_range(self):
+        """
+        Run on 2 period time schema and verify that double 'buy' doesn't
+        produce any changes. After closing long position another 'sell' is
+        made on day 3.
+        """
+        all_prices = [[1., 2., 2.6, 2.9], [3., 4., 4.4, 4.9], [5., 6., 7.13,
+                                                            7.18]]
+        signals = [['buy', 'buy', 'sell'],
+                   ['sell', 'buy', 'buy'],
+                   ['sell', None, 'sell'],
+                   ['buy', None, 'buy']]
+        returns, p_and_l = stockdata.get_returns_and_pl(all_prices, signals)
+        self.assertEqual(returns, [0, -0.38077249551779302,
+                                   -0.76376474777389891, -0.95015550861867115])
+        self.assertEqual(p_and_l, [0, 0.0, 0.0, -0.34999999999999964])
+
 
     # def test_history_run_lots_of_parameters(self):
     #     stocks = ['GOOG', 'YHOO', 'PLUG']
@@ -95,4 +140,7 @@ if __name__ == '__main__':
     tests.test_get_stock_names_5_from_1()
     tests.test_get_stock_names_10_from_27()
     tests.test_history_run_data_fetching()
+    tests.test_get_returns_and_pl_average_return()
+    tests.test_get_returns_and_pl_closing_trades()
+    tests.test_get_returns_and_pl_3_days_range()
     #tests.test_history_run_lots_of_parameters()

@@ -114,64 +114,63 @@ def get_returns_and_pl(all_prices, signals):
         """
         gross_returns = []
         for i, price in enumerate(open_prices):
-            if price > 0:
+            if price and price > 0:
                 # long position gross return
                 gross_returns.append(price/cur_prices[i])
-            elif price < 0:
+            elif price and price < 0:
                 price *= -1
                 # short position gross return
-                gross_returns.append((2 * price - cur_prices[i])/cur_prices[i])
+                gross_returns.append((2 * price - cur_prices[i])/price)
         return np.log(np.mean(gross_returns))
 
-    def refresh_prices(prices, signal_number):
+    def refresh_prices(open_prices, cur_prices, signal_number):
         """
         Close positions and open new ones depending on signals[signal_number]
         data.
 
-        :type prices: list
-        :param prices: list of current open prices for all stocks, negative
-        prices mean short positions
+        :type open_prices: list
+        :param open_prices: list of current open open_prices for all stocks, negative
+        open_prices mean short positions
         :param signal_number: index of signal to renew positions from
         :return : P&L of closed trades
         """
         profit_loss = 0
         cur_signal = signals[signal_number]
-        for i in range(all_prices):
+        for i, cur_price in enumerate(cur_prices):
             if cur_signal[i] == 'buy':
-                if not prices[i]:
-                    prices[i] = all_prices[i][signal_number]
-                elif prices[i] < 0:  # it means short position, we should
+                if not open_prices[i]:
+                    open_prices[i] = cur_price
+                elif open_prices[i] < 0:  # it means short position, we should
                 # close it
-                    profit_loss = -prices[i] - cur_signal[i]
-                    prices[i] = None
+                    profit_loss += -open_prices[i] - cur_price
+                    open_prices[i] = None
             elif cur_signal[i] == 'sell':
-                if not prices[i]:
-                    prices[i] = -all_prices[i][signal_number]
-                elif prices[i] > 0:  # it means long position, we should
+                if not open_prices[i]:
+                    open_prices[i] = -cur_price
+                elif open_prices[i] > 0:  # it means long position, we should
                 # close it
-                    profit_loss = -prices[i] - cur_signal[i]
-                    prices[i] = None
+                    profit_loss += cur_price - open_prices[i]
+                    open_prices[i] = None
         return profit_loss
 
     open_prices = [None] * len(all_prices)
 
-    # fill open_prices with initial stock prices data
-    refresh_prices(open_prices, 0)
-
     # go through all signals and count log returns and collect P&Ls
     returns = [0]
-    profit_loss = []
-    for i, signal in signals[1:]:
-        # accumulate recent log returns
+    profit_loss = [0]
+    for i, signal in enumerate(signals):
         cur_prices = [stock_price_list[i] for stock_price_list in all_prices]
+        if i == 0:
+            refresh_prices(open_prices, cur_prices, 0)
+            continue
+
+        # accumulate recent log returns        
         returns.append(returns[i - 1] + get_log_returns(open_prices,
                                                         cur_prices))
 
         # refresh open_prices after signal work
-        new_pl = refresh_prices(open_prices, i)
+        new_pl = refresh_prices(open_prices, cur_prices, i)
 
-        # append pl from last closed trades
-        profit_loss.append(new_pl)
+        # accumulate pl from last closed trades
+        profit_loss.append(profit_loss[i - 1] + new_pl)
     return returns, profit_loss
-
-

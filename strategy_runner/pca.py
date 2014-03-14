@@ -46,7 +46,7 @@ def signal(prices, index):
                 result[i, j] = np.cov(x, y, rowvar=0)[0][1]/np.var(y)
         return result
 
-    def regime_switcher(reduced_returns_m):
+    def regime(reduced_returns_m):
         """
         Make a regime switch based on PCA standard deviation acceleration.
 
@@ -112,7 +112,7 @@ def signal(prices, index):
                  mean_log_returns_m
 
     if regime_switcher:
-        regime = regime_switcher(reduced_returns_m)
+        regime = regime(reduced_returns_m)
     else:
         regime = 'mean_reversion'
 
