@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+<form action="{% url 'strategy_runner:run' %}" method="post">
+    {% csrf_token %}
+    Start date:  <input type="date" name="start_date">
+    End date:  <input type="date" name="end_date"><br/>
+    k:  <input type="number" name="k"> Amount of eigenvectors to consider.
+    Every of them represents a risk component. The more you set,
+    the more noise you will get.<br/>
+    H:  <input type="number" name="H"> Amount of last timestamps to
+    accumulate in order to gather statistic and predict future log returns.
+    <br/>
+    <input type="submit" value="Submit" />
+</form>
+</body>
+</html>

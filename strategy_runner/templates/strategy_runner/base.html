@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <title>
+        {% block title %}
+            Trading strategy based on PCA principle realization
+        {% endblock %}
+    </title>
+</head>
+
+<body>
+<div id="menu">
+    {% block menu %}
+        <ul>
+            <li>
+                <a href="{% url 'strategy_runner:history' %}">History</a></li>
+            <li>
+                <a href="{% url 'strategy_runner:scheduler' %}">Scheduler</a>
+            </li>
+        </ul>
+    {% endblock %}
+</div>
+
+<div id="content">
+    {% block content %}{% endblock %}
+</div>
+</body>
+</html>
