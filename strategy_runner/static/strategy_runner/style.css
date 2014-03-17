@@ -1,0 +1,105 @@
+* {margin:0; padding:0; outline:0}
+
+body {
+    /*font:11px Verdana,Arial;*/
+    color:#000;
+    background:#fff
+}
+
+.menu {
+    list-style:none;
+    font:16px Arial,Verdana;
+    text-align:center;
+    /*width:600px;*/
+    margin:0 auto
+}
+
+#nav {
+    height:36px;
+    background:#aaa;
+    color:#fff;
+    text-shadow:1px 1px #888;
+    z-index:1000
+}
+
+.menu a, .menu span {
+    float:left;
+    color: #eee;
+    text-decoration:none;
+    width:80px;
+    height:28px;
+    padding-top:8px
+}
+
+.menu a:hover {color:#fff}
+
+/*.menu li {*/
+    /*position:relative;*/
+    /*float:left;*/
+    /*width:120px;*/
+    /*z-index:1000;*/
+/*}*/
+
+.menu ul {
+    position:absolute;
+    font:normal 13px Arial,Verdana;
+    top:36px;
+    left:0;
+    background:#aaa;
+    list-style:none;
+    display: none;
+}
+
+.menu ul li {
+    float:none;
+    border-top:1px solid #ccc;
+    width:120px
+}
+
+.menu ul li a, .menu ul li span {
+    float:none;
+    display:block;
+    background:none;
+    height:22px;
+    padding-top:5px
+}
+
+.menu ul li a:hover, li a:hover {
+    background:#999;
+    color:#fff
+}
+
+.menu ul ul {
+    left:120px;
+    top:0
+}
+
+.menu li.submenu {font-weight:bold}
+.menu li.noborder {border-top:none}
+
+#info {
+    width:180px;
+    background:#eee
+}
+
+#info li {
+    width:160px;
+    border-top:none;
+    padding:8px 10px;
+    color:#665;
+    text-shadow:1px 1px #fff;
+    text-align:left
+}
+
+#content {
+    margin:5px;
+    float: none
+}
+
+.historyform {
+
+}
+
+.historyform input {
+    margin: 5px;
+}

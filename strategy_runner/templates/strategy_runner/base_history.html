@@ -1,7 +1,8 @@
 {% extends "strategy_runner/base.html" %}
 
 {% block content %}
-<form action="{% url 'strategy_runner:run' %}" method="post">
+<form class="historyform" action="{% url 'strategy_runner:run' %}"
+      method="post">
     {% csrf_token %}
     Start date:  <input type="date" name="start_date">
     End date:  <input type="date" name="end_date"><br/>

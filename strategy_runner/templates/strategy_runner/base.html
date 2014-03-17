@@ -1,7 +1,9 @@
+{% load staticfiles %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="{% static 'strategy_runner/style.css' %}" />
     <title>
         {% block title %}
             Trading strategy based on PCA principle realization
@@ -10,9 +12,9 @@
 </head>
 
 <body>
-<div id="menu">
+<div id="nav">
     {% block menu %}
-        <ul>
+        <ul class="menu">
             <li>
                 <a href="{% url 'strategy_runner:history' %}">History</a></li>
             <li>
