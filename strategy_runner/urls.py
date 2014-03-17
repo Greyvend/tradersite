@@ -6,4 +6,5 @@ urlpatterns = patterns('',
     # ex: /runner/
     url(r'^$', views.index, name='index'),
     url(r'^history/$', views.history, name='history'),
+    url(r'^scheduler/$', views.scheduler, name='scheduler'),
     url(r'^run/$', views.run, name='run'))

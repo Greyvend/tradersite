@@ -9,9 +9,13 @@ def index(request):
 
 
 def history(request):
-    return render(request, 'strategy_runner/history.html')
+    return render(request, 'strategy_runner/base_history.html')
 
 
 def run(request):
     pass
 #    return render(request, 'strategy_runner/index.html')
+
+
+def scheduler(request):
+    return render(request, 'strategy_runner/base_scheduler.html')
