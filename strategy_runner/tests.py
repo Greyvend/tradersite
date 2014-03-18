@@ -46,6 +46,46 @@ class BasicLogicTests(TestCase):
                 'ACFN', 'ACTS', 'ACPW', 'ATVI', 'BIRT']
         self.assertEqual(first_10_nasdaq_stocks, right_stocks)
 
+    def test_history_run_simple(self):
+        # parameters:
+        pca.k = 2
+        pca.H = 4
+        stocks = ['GOOG', 'YHOO']
+        index = '^GSPC'
+        time_period = 10
+        start_date = datetime.date(2014, 2, 11)
+        end_date = datetime.date(2014, 3, 18)
+
+        # run tested function
+        dates, prices, signals = stockdata.history_run(stocks, index,
+                                                       time_period, start_date,
+                                                       end_date)
+
+        # correct values
+        right_signals = [['sell', 'sell', 'sell', 'sell', 'sell'],
+                         ['sell', 'sell', 'sell', 'sell', 'sell'],
+                         ['buy', 'sell', 'sell', 'buy', 'buy'],
+                         ['buy', 'sell', 'sell', 'sell', 'buy'],
+                         ['sell', 'sell', 'sell', 'sell', 'sell']]
+        right_dates = [datetime.date(2014, 3, 7),
+                       datetime.date(2014, 3, 10),
+                       datetime.date(2014, 3, 11),
+                       datetime.date(2014, 3, 12),
+                       datetime.date(2014, 3, 13)]
+        right_prices = [[5.41, 5.46, 5.47, 5.46, 5.36],
+                        [8.11, 8.13, 8.0, 7.89, 7.97],
+                        [10.25, 10.3, 10.25, 10.25, 10.3],
+                        [32.12, 32.01, 31.67, 31.94, 31.81],
+                        [7.87, 7.9, 7.81, 7.79, 7.64]]
+
+        # checking equality
+        print dates
+        print prices
+        print signals
+        # self.assertEqual(dates, right_dates)
+        # self.assertEqual(prices, right_prices)
+        # self.assertEqual(signals, right_signals)
+
     def test_history_run_data_fetching(self):
         #parameters:
         pca.k = 2
@@ -149,11 +189,12 @@ class BasicLogicTests(TestCase):
 
 if __name__ == '__main__':
     tests = BasicLogicTests()
-    tests.simple_test_random_values()
-    tests.test_get_stock_names_5_from_1()
-    tests.test_get_stock_names_10_from_27()
-    tests.test_history_run_data_fetching()
-    tests.test_get_returns_and_pl_average_return()
-    tests.test_get_returns_and_pl_closing_trades()
-    tests.test_get_returns_and_pl_3_days_range()
-    #tests.test_history_run_lots_of_parameters()
+    # tests.simple_test_random_values()
+    # tests.test_get_stock_names_5_from_1()
+    # tests.test_get_stock_names_10_from_27()
+    tests.test_history_run_simple()
+    # tests.test_history_run_data_fetching()
+    # tests.test_get_returns_and_pl_average_return()
+    # tests.test_get_returns_and_pl_closing_trades()
+    # tests.test_get_returns_and_pl_3_days_range()
+

@@ -1,16 +1,25 @@
 {% extends "strategy_runner/base.html" %}
-
-{% block content %}
+{#TODO: required arguments#}
+{#TODO: default values#}
+{% block form %}
 <form class="historyform" action="{% url 'strategy_runner:run' %}"
       method="post">
     {% csrf_token %}
     Start date:  <input type="date" name="start_date">
     End date:  <input type="date" name="end_date"><br/>
-    k:  <input type="number" name="k"> Amount of eigenvectors to consider.
-    Every of them represents a risk component. The more you set,
-    the more noise you will get.<br/>
-    H:  <input type="number" name="H"> Amount of last timestamps to
-    accumulate in order to gather statistic and predict future log returns.
+    Stock amount: <input type="number" name="stock_amount"><br/>
+    Time period: <input type="number" name="time_period" title="Amount of
+    timestamps for algorithm to consider in a single run"><br/>
+    k:  <input type="number" name="k" title="Amount of eigenvectors to
+    consider. Every of them represents a risk component. The more you set,
+    the more noise you will get."><br/>
+    H:  <input type="number" name="H" title="Amount of last timestamps to
+    accumulate in order to gather statistic and predict future log returns">
+    <br/>
+    Regime switcher: <input type="radio"
+                            name="regime_switcher" value="on">On<br/>
+    <input type="radio"
+           name="regime_switcher" value="off">Off<br/>
     <br/>
     <input type="submit" value="Submit" />
 </form>

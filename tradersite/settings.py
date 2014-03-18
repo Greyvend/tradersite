@@ -36,7 +36,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'strategy_runner'
+    'strategy_runner',
+    'GChartWrapper.charts'
 )
 
 MIDDLEWARE_CLASSES = (

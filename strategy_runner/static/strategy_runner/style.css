@@ -91,15 +91,11 @@ body {
     text-align:left
 }
 
-#content {
+#form {
     margin:5px;
     float: none
 }
 
-.historyform {
-
-}
-
-.historyform input {
+#form input {
     margin: 5px;
 }
