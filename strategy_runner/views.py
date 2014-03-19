@@ -59,10 +59,15 @@ def run(request):
         dates, prices, signals = stockdata.history_run(stocks, index,
                                                        time_period, start_date,
                                                        end_date)
+        returns, pl = stockdata.get_returns_and_pl(prices, signals)
     except KeyError:
         raise
-    return HttpResponseRedirect(reverse('strategy_runner:history'))
-    #return HttpResponse(dates, prices, signals)
+    return render(request,
+                  'strategy_runner/base_history.html',
+                  {'dates': dates,
+                   'prices': prices,
+                   'returns': returns,
+                   'pl': pl})
 
 
 def example(request):
