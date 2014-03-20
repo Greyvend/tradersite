@@ -29,8 +29,7 @@ def scheduler(request):
 def run(request):
     def graph_img(x, y, name):
         def y_precise():
-            result = []
-            result.append("chd=t:")
+            result = ["chd=t:"]
             for elem in y:
                 result.append(str(elem))
                 result.append(',')
