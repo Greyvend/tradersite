@@ -129,7 +129,23 @@ class BasicLogicTests(TestCase):
         stock_amount	  u'10'
         time_period	      u'20'
         """
-        pass
+        #parameters:
+        pca.k = 5
+        pca.H = 10
+        pca.regime_switcher = False
+        amount = 10
+        stocks = stockdata.get_stock_names(self.nasdaq_path, amount)
+        index = '^GSPC'
+        time_period = 20
+        start_date = datetime.date(2010, 1, 5)
+        end_date = datetime.date(2014, 3, 20)
+        dates, prices, signals = stockdata.history_run(stocks, index,
+                                                       time_period, start_date,
+                                                       end_date)
+        # self.assertEqual(dates, right_dates)
+        # self.assertEqual(prices, right_prices)
+        # self.assertEqual(signals, right_signals)
+        print dates, prices, signals
 
     def test_get_returns_and_pl_average_return(self):
         """
@@ -201,12 +217,13 @@ class BasicLogicTests(TestCase):
 
 if __name__ == '__main__':
     tests = BasicLogicTests()
-    # tests.simple_test_random_values()
-    # tests.test_get_stock_names_5_from_1()
-    # tests.test_get_stock_names_10_from_27()
+    tests.simple_test_random_values()
+    tests.test_get_stock_names_5_from_1()
+    tests.test_get_stock_names_10_from_27()
     tests.test_history_run_simple()
-    # tests.test_history_run_data_fetching()
-    # tests.test_get_returns_and_pl_average_return()
-    # tests.test_get_returns_and_pl_closing_trades()
-    # tests.test_get_returns_and_pl_3_days_range()
+    tests.test_history_run_data_fetching()
+    tests.test_history_run_big_data()
+    tests.test_get_returns_and_pl_average_return()
+    tests.test_get_returns_and_pl_closing_trades()
+    tests.test_get_returns_and_pl_3_days_range()
 

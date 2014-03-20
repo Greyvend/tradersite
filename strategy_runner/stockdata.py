@@ -121,7 +121,11 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
                                       t + start_position)
 
         # call algorithm function
-        signals.append(pca.signal(prices, split_index))
+        try:
+            signals.append(pca.signal(prices, split_index))
+        except pca.WrongPricesError, pca.WrongParameterException:
+            raise
+
 
     # leave only prices that correspond signals
     prices = [price_list[time_period - 1:] for price_list in all_prices]
@@ -203,3 +207,27 @@ def get_returns_and_pl(all_prices, signals):
         # accumulate pl from last closed trades
         profit_loss.append(profit_loss[i - 1] + new_pl)
     return returns, profit_loss
+
+
+# class StockDataException(Exception):
+#     pass
+#
+#
+# class ShortStockHistory(StockDataException):
+#     def __init__(self, stock, begin_date):
+#         self.stock = stock
+#         self.begin_date = begin_date
+#
+#     def __str__(self):
+#         return "History data for stock ", repr(self.stock), " exists only ",\
+#                "from ", repr(self.begin_date)
+#
+#
+# class ShortHistoryChosen(StockDataException):
+#     def __init__(self, timestamps):
+#         self.timestamps = timestamps
+#
+#     def __str__(self):
+#         return "History data lacks ", repr(self.timestamps), " timestamps ",\
+#         "to collect statisctic. Please, choose larger analysis period or ",\
+#         "lessen either the PCA dimesion parameter or Time period."

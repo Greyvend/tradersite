@@ -76,7 +76,11 @@ def signal(prices, index):
     prices_m = ml.matrix(prices).T
 
     # Preparing main matrices for further computations
-    log_returns_m = np.log(ml.divide(prices_m[1:], prices_m[:-1]))
+    try:
+        log_returns_m = np.log(ml.divide(prices_m[1:], prices_m[:-1]))
+    except TypeError as e:
+        raise WrongPricesError(prices_m)
+
     time_period, stock_amount = log_returns_m.shape
     mean_log_returns_m = ml.average(log_returns_m, axis=0)
     demeaned_log_returns_m = log_returns_m - mean_log_returns_m
@@ -137,9 +141,22 @@ def signal(prices, index):
     return result
 
 
-class WrongParameterException(Exception):
+class PCAError(Exception):
+    pass
+
+
+class WrongParameterException(PCAError):
     def __init__(self, msg):
         self.msg = msg
 
     def __str__(self):
         return repr(self.msg)
+
+
+class WrongPricesError(PCAError):
+    def __init__(self, prices):
+        self.prices = prices
+
+    def __str__(self):
+        return "Cannot form log returns from these prices. Some stock has " \
+               "shorter history"

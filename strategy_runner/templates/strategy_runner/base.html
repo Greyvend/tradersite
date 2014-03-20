@@ -30,13 +30,16 @@
     {% block form %}{% endblock %}
 </div>
 
-<div id="graphs">
-    {% block graphs %}
-        {% for img in graph_imgs %}
-            {{ img|safe }}
-        {% endfor %}
-    {% endblock %}
-</div>
-
+{% if error_message %}
+    <p><strong>{{ error_message }}</strong></p>
+{% else %}
+    <div id="graphs">
+        {% block graphs %}
+            {% for img in graph_imgs %}
+                {{ img|safe }}
+            {% endfor %}
+        {% endblock %}
+    </div>
+{% endif %}
 </body>
 </html>
