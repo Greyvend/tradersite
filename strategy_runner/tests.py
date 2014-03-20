@@ -119,6 +119,18 @@ class BasicLogicTests(TestCase):
         self.assertEqual(prices, right_prices)
         self.assertEqual(signals, right_signals)
 
+    def test_history_run_big_data(self):
+        """
+        start_date	      u'2010-01-05'
+        end_date          u'2014-03-20'
+        H	              u'10'
+        k	              u'5'
+        regime_switcher   u'off'
+        stock_amount	  u'10'
+        time_period	      u'20'
+        """
+        pass
+
     def test_get_returns_and_pl_average_return(self):
         """
         Run on simple 2 period time schema and verify that average return is

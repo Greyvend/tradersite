@@ -1,10 +1,11 @@
 {% load staticfiles %}
-{% load charts %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="stylesheet" href="{% static 'strategy_runner/style.css' %}" />
+    <link rel="stylesheet"
+          href="http://yui.yahooapis.com/pure/0.4.2/pure-min.css">
     <title>
         {% block title %}
             Trading strategy based on PCA principle realization
@@ -31,32 +32,9 @@
 
 <div id="graphs">
     {% block graphs %}
-        {% if prices %}
-            {% for price_list in prices %}
-                {% chart Line 50.74 51 50.28 50.63 50.93 50.23 50.03 %}
-                    {% axes type xy %}
-                    {% axes range 1 50 51 %}
-                    {% label Jan Feb Mar Apr May Jun Jul %}
-                {% endchart %}
-            {% endfor %}
-{#        print graphs with y axis prices#}
-        {% endif %}
-
-        {% if returns %}
-            {% chart Line 50.74 51 50.28 50.63 50.93 50.23 50.03 %}
-                {% axes type xy %}
-                {% axes range 1 50 51 %}
-                {% label Jan Feb Mar Apr May Jun Jul %}
-            {% endchart %}
-        {% endif %}
-
-        {% if pl %}
-            {% chart Line 50.74 51 50.28 50.63 50.93 50.23 50.03 %}
-                {% axes type xy %}
-                {% axes range 1 50 51 %}
-                {% label Jan Feb Mar Apr May Jun Jul %}
-            {% endchart %}
-        {% endif %}
+        {% for img in graph_imgs %}
+            {{ img|safe }}
+        {% endfor %}
     {% endblock %}
 </div>
 

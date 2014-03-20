@@ -92,7 +92,6 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
             result.append(l[i:i+size])
         return result
 
-    print "I start history_run"
     #gather and split price data in equal chunks to feed signal
     dates, index_prices = _get_prices(index, start_date, end_date)
 
@@ -103,13 +102,9 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
     # because k preceding index price time periods are required for the
     # first stock price time period
     start_position = (pca.k - 1) * time_period
-# print "I go closer to the first get_prices launch"
-# print "stocks are: ", stocks
     for stock in stocks:
         history = _get_prices(stock, start_date, end_date)[1][start_position:]
         all_prices.append(history)
-
-
 
     # make successive calls to signal function with continuous time history
     signals = []
@@ -128,15 +123,10 @@ def history_run(stocks, index, time_period, start_date, end_date=date.today()):
         # call algorithm function
         signals.append(pca.signal(prices, split_index))
 
-    print "before slicing prices are: ", all_prices
     # leave only prices that correspond signals
     prices = [price_list[time_period - 1:] for price_list in all_prices]
     # leave only dates that correspond signals
-    print "before slicing dates are: ", dates
     dates = dates[start_position + time_period - 1:]
-    print "returning :", dates
-    print "and prices: ", prices
-    print "and signals of course: ", signals
     return dates, prices, signals
 
 

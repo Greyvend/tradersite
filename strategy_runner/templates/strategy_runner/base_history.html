@@ -2,25 +2,78 @@
 {#TODO: required arguments#}
 {#TODO: default values#}
 {% block form %}
-<form class="historyform" action="{% url 'strategy_runner:run' %}"
-      method="post">
+{#<form class="historyform" action="{% url 'strategy_runner:run' %}"#}
+{#      method="post">#}
+{#    {% csrf_token %}#}
+{#    Start date:  <input type="date" name="start_date">#}
+{#    End date:  <input type="date" name="end_date"><br/>#}
+{#    Stock amount: <input type="number" name="stock_amount"><br/>#}
+{#    Time period: <input type="number" name="time_period" title="Amount of#}
+{#    timestamps for algorithm to consider in a single run"><br/>#}
+{#    k:  <input type="number" name="k" title="Amount of eigenvectors to#}
+{#    consider. Every of them represents a risk component. The more you set,#}
+{#    the more noise you will get."><br/>#}
+{#    H:  <input type="number" name="H" title="Amount of last timestamps to#}
+{#    accumulate in order to gather statistic and predict future log returns">#}
+{#    <br/>#}
+{#    Regime switcher: <input type="radio"#}
+{#                            name="regime_switcher" value="on">On<br/>#}
+{#    <input type="radio"#}
+{#           name="regime_switcher" value="off">Off<br/>#}
+{#    <br/>#}
+{#    <input type="submit" value="Submit" />#}
+{#</form>#}
+<form class="pre-form pure-form-aligned" action=
+        "{% url 'strategy_runner:run' %}" method="post">
     {% csrf_token %}
-    Start date:  <input type="date" name="start_date">
-    End date:  <input type="date" name="end_date"><br/>
-    Stock amount: <input type="number" name="stock_amount"><br/>
-    Time period: <input type="number" name="time_period" title="Amount of
-    timestamps for algorithm to consider in a single run"><br/>
-    k:  <input type="number" name="k" title="Amount of eigenvectors to
-    consider. Every of them represents a risk component. The more you set,
-    the more noise you will get."><br/>
-    H:  <input type="number" name="H" title="Amount of last timestamps to
-    accumulate in order to gather statistic and predict future log returns">
-    <br/>
-    Regime switcher: <input type="radio"
-                            name="regime_switcher" value="on">On<br/>
-    <input type="radio"
-           name="regime_switcher" value="off">Off<br/>
-    <br/>
-    <input type="submit" value="Submit" />
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="start_date">Start date</label>
+            <input id="start_date" type="date" name="start_date">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="end_date">Start date</label>
+            <input id="end_date" type="date" name="end_date">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="stock_amount">Stock amount</label>
+            <input id="stock_amount" type="number" name="stock_amount">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="time_period">Time period</label>
+            <input id="time_period" type="number" name="time_period"
+            title="Amount of timestamps for algorithm to consider in a
+            single run">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="k">PCA size</label>
+            <input id="k" type="number" name="k" title="The dimension of PCA 
+            universe. Bigger number means more information about trend 
+            tendentions, but introduces additional noise.">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="H">Prediction base</label>
+            <input id="H" type="number" name="H" title="Amount of last
+            timestamps to accumulate in order to gather statistic and predict
+            future log returns">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="regime_switcher">Regime switcher</label>
+            <input class="pure-radio" id="regime_switcher" type="radio"
+                   name="regime_switcher" value="on">On
+            <input class="pure-radio" id="regime_switcher" type="radio"
+                   name="regime_switcher" value="off">Off
+        </div>
+
+        <button type="submit" class="pure-button pure-button-primary">
+            Submit
+        </button>
+    </fieldset>
 </form>
 {% endblock %}
