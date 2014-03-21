@@ -142,10 +142,10 @@ class BasicLogicTests(TestCase):
         dates, prices, signals = stockdata.history_run(stocks, index,
                                                        time_period, start_date,
                                                        end_date)
+        #TODO assert fault on short history
         # self.assertEqual(dates, right_dates)
         # self.assertEqual(prices, right_prices)
         # self.assertEqual(signals, right_signals)
-        print dates, prices, signals
 
     def test_get_returns_and_pl_average_return(self):
         """
