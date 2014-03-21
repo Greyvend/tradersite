@@ -7,5 +7,4 @@ urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
     url(r'^history/$', views.history, name='history'),
     url(r'^scheduler/$', views.scheduler, name='scheduler'),
-    url(r'^example/$', views.example, name='example'),
     url(r'^run/$', views.run, name='run'))
